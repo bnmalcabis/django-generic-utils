@@ -33,14 +33,14 @@ def url_to_edit_object(obj):
     """
     url to edit an object in admin
     """
-    return reverse('admin:%s_%s_change' % (obj._meta.app_label,  obj._meta.module_name),  args=[obj.id])
+    return reverse('admin:%s_%s_change' % (obj._meta.app_label,  obj._meta.model_name),  args=[obj.id])
 
 
 def url_to_list_view_of_object(obj):
     """
     url to list view of an object in admin
     """
-    return reverse('admin:%s_%s_changelist' % (obj._meta.app_label,  obj._meta.module_name))
+    return reverse('admin:%s_%s_changelist' % (obj._meta.app_label,  obj._meta.model_name))
 
 
 def get_or_cache(key, time=3600, func=lambda: None, kwargs={}):
