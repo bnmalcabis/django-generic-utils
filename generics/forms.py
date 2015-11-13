@@ -70,6 +70,7 @@ When you change something (object already exists):
 class MessagesForm(forms.ModelForm):
     class Meta:
         model = Messages
+        fields = '__all__'
 
 
 

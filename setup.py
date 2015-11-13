@@ -24,7 +24,6 @@ setup(name='django-generic-utils',
       zip_safe=False,
       install_requires=[
         "django",
-        "South",
         "beautifulsoup4",
       ],
       long_description=long_description,

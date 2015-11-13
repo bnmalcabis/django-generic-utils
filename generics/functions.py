@@ -16,6 +16,7 @@ from urlparse import urlparse
 
 # import datetime
 
+
 def get_or_none(model, **kwargs):
     try:
         return model.objects.get(**kwargs)
@@ -44,14 +45,14 @@ def url_to_edit_object(obj):
     """
     url to edit an object in admin
     """
-    return reverse('admin:%s_%s_change' %(obj._meta.app_label,  obj._meta.module_name),  args=[obj.id] )
+    return reverse('admin:%s_%s_change' %(obj._meta.app_label,  obj._meta.model_name),  args=[obj.id] )
 
 
 def url_to_list_view_of_object(obj):
     """
     url to list view of an object in admin
     """
-    return reverse('admin:%s_%s_changelist' % (obj._meta.app_label,  obj._meta.module_name))
+    return reverse('admin:%s_%s_changelist' % (obj._meta.app_label,  obj._meta.model_name))
 
 
 

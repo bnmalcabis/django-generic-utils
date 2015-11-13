@@ -1,88 +1,64 @@
 # -*- coding: utf-8 -*-
-from south.utils import datetime_utils as datetime
-from south.db import db
-from south.v2 import SchemaMigration
-from django.db import models
+from __future__ import unicode_literals
+
+from django.db import migrations, models
+from django.conf import settings
 
 
-class Migration(SchemaMigration):
+class Migration(migrations.Migration):
 
-    def forwards(self, orm):
-        # Adding model 'MessagesStatus'
-        db.create_table(u'generics_messagesstatus', (
-            (u'id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
-            ('message', self.gf('django.db.models.fields.related.ForeignKey')(related_name='status_of_messaged_users', to=orm['generics.Messages'])),
-            ('user', self.gf('django.db.models.fields.related.ForeignKey')(related_name='status_of_user_messages', to=orm['auth.User'])),
-            ('akhnowledge_date', self.gf('django.db.models.fields.DateTimeField')()),
-        ))
-        db.send_create_signal(u'generics', ['MessagesStatus'])
+    dependencies = [
+        migrations.swappable_dependency(settings.AUTH_USER_MODEL),
+    ]
 
-        # Adding model 'Messages'
-        db.create_table(u'generics_messages', (
-            (u'id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
-            ('msg', self.gf('django.db.models.fields.CharField')(max_length=255)),
-        ))
-        db.send_create_signal(u'generics', ['Messages'])
-
-
-    def backwards(self, orm):
-        # Deleting model 'MessagesStatus'
-        db.delete_table(u'generics_messagesstatus')
-
-        # Deleting model 'Messages'
-        db.delete_table(u'generics_messages')
-
-
-    models = {
-        u'auth.group': {
-            'Meta': {'object_name': 'Group'},
-            u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'name': ('django.db.models.fields.CharField', [], {'unique': 'True', 'max_length': '80'}),
-            'permissions': ('django.db.models.fields.related.ManyToManyField', [], {'to': u"orm['auth.Permission']", 'symmetrical': 'False', 'blank': 'True'})
-        },
-        u'auth.permission': {
-            'Meta': {'ordering': "(u'content_type__app_label', u'content_type__model', u'codename')", 'unique_together': "((u'content_type', u'codename'),)", 'object_name': 'Permission'},
-            'codename': ('django.db.models.fields.CharField', [], {'max_length': '100'}),
-            'content_type': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['contenttypes.ContentType']"}),
-            u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'name': ('django.db.models.fields.CharField', [], {'max_length': '50'})
-        },
-        u'auth.user': {
-            'Meta': {'object_name': 'User'},
-            'date_joined': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime.now'}),
-            'email': ('django.db.models.fields.EmailField', [], {'max_length': '75', 'blank': 'True'}),
-            'first_name': ('django.db.models.fields.CharField', [], {'max_length': '30', 'blank': 'True'}),
-            'groups': ('django.db.models.fields.related.ManyToManyField', [], {'to': u"orm['auth.Group']", 'symmetrical': 'False', 'blank': 'True'}),
-            u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'is_active': ('django.db.models.fields.BooleanField', [], {'default': 'True'}),
-            'is_staff': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
-            'is_superuser': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
-            'last_login': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime.now'}),
-            'last_name': ('django.db.models.fields.CharField', [], {'max_length': '30', 'blank': 'True'}),
-            'password': ('django.db.models.fields.CharField', [], {'max_length': '128'}),
-            'user_permissions': ('django.db.models.fields.related.ManyToManyField', [], {'to': u"orm['auth.Permission']", 'symmetrical': 'False', 'blank': 'True'}),
-            'username': ('django.db.models.fields.CharField', [], {'unique': 'True', 'max_length': '30'})
-        },
-        u'contenttypes.contenttype': {
-            'Meta': {'ordering': "('name',)", 'unique_together': "(('app_label', 'model'),)", 'object_name': 'ContentType', 'db_table': "'django_content_type'"},
-            'app_label': ('django.db.models.fields.CharField', [], {'max_length': '100'}),
-            u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'model': ('django.db.models.fields.CharField', [], {'max_length': '100'}),
-            'name': ('django.db.models.fields.CharField', [], {'max_length': '100'})
-        },
-        u'generics.messages': {
-            'Meta': {'object_name': 'Messages'},
-            u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'msg': ('django.db.models.fields.CharField', [], {'max_length': '255'}),
-            'users': ('django.db.models.fields.related.ManyToManyField', [], {'related_name': "'messages_of_user'", 'symmetrical': 'False', 'through': u"orm['generics.MessagesStatus']", 'to': u"orm['auth.User']"})
-        },
-        u'generics.messagesstatus': {
-            'Meta': {'object_name': 'MessagesStatus'},
-            'akhnowledge_date': ('django.db.models.fields.DateTimeField', [], {}),
-            u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'message': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'status_of_messaged_users'", 'to': u"orm['generics.Messages']"}),
-            'user': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'status_of_user_messages'", 'to': u"orm['auth.User']"})
-        }
-    }
-
-    complete_apps = ['generics']
+    operations = [
+        migrations.CreateModel(
+            name='CeleryTasks',
+            fields=[
+                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
+                ('task_id', models.CharField(unique=True, max_length=50, verbose_name=b'task id', db_index=True)),
+                ('status', models.CharField(default=b'waiting', max_length=40, verbose_name=b'state', db_index=True)),
+                ('creation_date', models.DateTimeField(auto_now_add=True, verbose_name=b'Creation Date')),
+                ('start_date', models.DateTimeField(null=True, verbose_name=b'Start Date')),
+                ('end_date', models.DateTimeField(default=None, null=True, verbose_name=b'End Date')),
+                ('key', models.CharField(default=b'', max_length=50, verbose_name=b'Task Blocking Key', db_index=True, blank=True)),
+                ('user', models.ForeignKey(related_name='tasks_of_user', to=settings.AUTH_USER_MODEL)),
+            ],
+            options={
+                'verbose_name': 'Task History',
+                'verbose_name_plural': 'Tasks History',
+            },
+        ),
+        migrations.CreateModel(
+            name='Messages',
+            fields=[
+                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
+                ('msg', models.CharField(default=b'Message', max_length=255, verbose_name=b'Message')),
+                ('msg_code', models.CharField(unique=True, max_length=30, verbose_name=b'Message Unique Code', db_index=True)),
+                ('button_txt', models.CharField(default=b'Ok', max_length=50, verbose_name=b'Button Text')),
+                ('button_link', models.URLField(default=b'', verbose_name=b'Button Link', blank=True)),
+            ],
+            options={
+                'verbose_name': 'Message',
+                'verbose_name_plural': 'Messages',
+            },
+        ),
+        migrations.CreateModel(
+            name='MessagesStatus',
+            fields=[
+                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
+                ('akhnowledge_date', models.DateTimeField(default=None, null=True, editable=False)),
+                ('message', models.ForeignKey(related_name='status_of_user_messages', to='generics.Messages')),
+                ('user', models.ForeignKey(related_name='status_of_messaged_users', to=settings.AUTH_USER_MODEL)),
+            ],
+        ),
+        migrations.AddField(
+            model_name='messages',
+            name='users',
+            field=models.ManyToManyField(help_text=b'Users who need to akhnowledge this message', related_name='messages_of_user', through='generics.MessagesStatus', to=settings.AUTH_USER_MODEL),
+        ),
+        migrations.AlterUniqueTogether(
+            name='messagesstatus',
+            unique_together=set([('message', 'user')]),
+        ),
+    ]

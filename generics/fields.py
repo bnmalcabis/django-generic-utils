@@ -3,14 +3,10 @@
 partly based on Federico Capoano script
 """
 
-
-
 from django.db.models import FileField
 from django.forms import forms
 from django.template.defaultfilters import filesizeformat
 from django.utils.translation import ugettext_lazy as _
-
-from south.modelsinspector import add_introspection_rules
 
 
 class RestrictedFileField(FileField):
@@ -33,8 +29,7 @@ class RestrictedFileField(FileField):
 
         super(RestrictedFileField, self).__init__(*args, **kwargs)
 
-
-    def clean(self, *args, **kwargs):        
+    def clean(self, *args, **kwargs):
         data = super(RestrictedFileField, self).clean(*args, **kwargs)
         
         file = data.file
@@ -50,14 +45,11 @@ class RestrictedFileField(FileField):
             
         return data
 
-
-add_introspection_rules([
-    (
-        [RestrictedFileField], # Class(es) these apply to
-        [],         # Positional arguments (not used)
-        {           # Keyword argument
-            "max_upload_size": ["max_upload_size", {}],
-            "content_types": ["content_types", {}],
-        },
-    ),
-], ["^generics\.fields\.RestrictedFileField"])
+    def deconstruct(self):
+        name, path, args, kwargs = super(RestrictedFileField, self)\
+            .deconstruct()
+        if self.content_types:
+            kwargs['content_types'] = self.content_types
+        if self.max_upload_size:
+            kwargs['max_upload_size'] = self.max_upload_size
+        return name, path, args, kwargs
