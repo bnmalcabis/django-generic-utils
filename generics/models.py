@@ -107,16 +107,13 @@ class MessagesStatus(models.Model):
             return "%s has not akhnowledged %s yet" % (self.user, self.message)
 
 
-
-
 class MessagesManager(GenericManager):
-    
-    def create_msg(self, msg, msg_code, username):
-        """
-        This is a simple function to message one user. If the message has been akhnowledged before
-        it will pop it up again.
-        """
 
+    def create_msg_for_single_user(self, msg, msg_code, username):
+        """
+        This is a simple function to message one user. If the message has been
+        akhnowledged before it will pop it up again.
+        """
         from django.db import IntegrityError
 
         try:
@@ -124,7 +121,7 @@ class MessagesManager(GenericManager):
         except:
             message_obj = self.create(msg=msg, msg_code=msg_code)
         else:
-            message_obj.msg=msg
+            message_obj.msg = msg
             message_obj.save()
 
         the_user = User.objects.get(username=username)
@@ -132,12 +129,18 @@ class MessagesManager(GenericManager):
             MessagesStatus.objects.create(message=message_obj, user=the_user)
         except IntegrityError:
             ms = MessagesStatus.objects.get(message=message_obj, user=the_user)
-            ms.akhnowledge_date=None
+            ms.akhnowledge_date = None
             ms.save()
         except:
-            logger.error("Error when creating user message: message status:", exc_info=True)
+            logger.error(
+                "Error when creating user message: message status:",
+                exc_info=True
+            )
 
-
+    def create_msg(self, msg, msg_code, usernames=None):
+        """ Creates the messages for several usernames """
+        for username in usernames:
+            self.create_msg_for_single_user(msg, msg_code, username)
 
 
 class Messages(models.Model):
