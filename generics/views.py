@@ -128,7 +128,9 @@ def messages_api(request):
 
     if message_id and action:
         if action=="remove":
-            result = MessagesStatus.objects.filter(message__pk=message_id, user=request.user).update(akhnowledge_date=timezone.now())
+            # modifification to update the messages for all the users
+            # result = MessagesStatus.objects.filter(message__pk=message_id, user=request.user).update(akhnowledge_date=timezone.now())
+            result = MessagesStatus.objects.filter(message__pk=message_id).update(akhnowledge_date=timezone.now())
                 # m.users.remove(request.user)
                 # result = "Removed"
             # except MessagesStatus.DoesNotExist:
