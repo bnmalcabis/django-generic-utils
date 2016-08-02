@@ -1,8 +1,12 @@
 # -*- coding: utf-8 -*-
+
+import types
+
 from django.db import models
 from django.utils import timezone
 from django.contrib.auth.models import User
-import types
+from django.core.exceptions import ObjectDoesNotExist
+
 from generics.functions import datetime_difference
 
 import logging
@@ -124,18 +128,26 @@ class MessagesManager(GenericManager):
             message_obj.msg = msg
             message_obj.save()
 
-        the_user = User.objects.get(username=username)
         try:
-            MessagesStatus.objects.create(message=message_obj, user=the_user)
-        except IntegrityError:
-            ms = MessagesStatus.objects.get(message=message_obj, user=the_user)
-            ms.akhnowledge_date = None
-            ms.save()
-        except:
+            the_user = User.objects.get(username=username)
+        except ObjectDoesNotExist:
             logger.error(
-                "Error when creating user message: message status:",
-                exc_info=True
+                "There's no user with username {}".format(username)
             )
+        else:
+            try:
+                MessagesStatus.objects.create(
+                    message=message_obj, user=the_user)
+            except IntegrityError:
+                ms = MessagesStatus.objects.get(
+                    message=message_obj, user=the_user)
+                ms.akhnowledge_date = None
+                ms.save()
+            except:
+                logger.error(
+                    "Error when creating user message: message status:",
+                    exc_info=True
+                )
 
     def create_msg(self, msg, msg_code, usernames=None):
         """ Creates the messages for several usernames """
