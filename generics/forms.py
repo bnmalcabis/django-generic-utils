@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from django import forms
 from django.contrib.admin.widgets import FilteredSelectMultiple
-from django.contrib.auth.models import User
+from django.contrib.auth.models import get_user_model
 
 from generics.models import Messages, MessagesStatus
 from django.utils.datastructures import MultiValueDictKeyError
@@ -13,20 +13,20 @@ logger.setLevel(logging.INFO)
 
 """
 Example data inside ModelForm:
-{'files': {}, 
-'is_bound': False, 
-'error_class': <class 'django.forms.util.ErrorList'>, 
-'empty_permitted': False, 
+{'files': {},
+'is_bound': False,
+'error_class': <class 'django.forms.util.ErrorList'>,
+'empty_permitted': False,
 'fields': {'msg': <django.forms.fields.CharField object at 0x167e990>,
-'users': <django.forms.fields.MultipleChoiceField object at 0x167ead0>}, 
-'initial': {'msg': u'Hello!', u'id': 1L, 'users': [1L]}, 
-'label_suffix': u':', 
+'users': <django.forms.fields.MultipleChoiceField object at 0x167ead0>},
+'initial': {'msg': u'Hello!', u'id': 1L, 'users': [1L]},
+'label_suffix': u':',
 'instance': <Messages: Hello!>,
-'prefix': None, 
-'_changed_data': None, 
-'_validate_unique': False, 
-'data': {}, 
-'_errors': None, 
+'prefix': None,
+'_changed_data': None,
+'_validate_unique': False,
+'data': {},
+'_errors': None,
 'auto_id': u'id_%s'}
 
 
@@ -34,22 +34,22 @@ When you change something (object already exists):
 
 {'files': {},
 'is_bound': True,
-'cleaned_data': {'msg': u'Hello!', 'users': [u'1']}, 
+'cleaned_data': {'msg': u'Hello!', 'users': [u'1']},
 'error_class': <class 'django.forms.util.ErrorList'>,
 'empty_permitted': False,
 'fields': {
     'msg': <django.forms.fields.CharField object at 0x2fe9f10>,
     'users': <django.forms.fields.MultipleChoiceField object at 0x2ddd6d0>
-    }, 
+    },
 'save_m2m': <function save_m2m at 0x2fff668>,
 'initial': {
     'msg': u'Hello!',
-    u'id': 1L, 
+    u'id': 1L,
     'users': [1L, 2L]
     },
-'label_suffix': u':', 
+'label_suffix': u':',
 'instance': <Messages: Hello!>,
-'prefix': None, 
+'prefix': None,
 '_changed_data': None,    <-- DOES NOT INCLUDE THE M2M changed data!!
 '_validate_unique': True,
 'data': <QueryDict:{
@@ -84,8 +84,8 @@ class MessagesForm(forms.ModelForm):
 
 # if 1:
 #     if 1:
-        users_objects = User.objects.all().only("pk", "username",)
-        choices = []        
+        users_objects = get_user_model().objects.all().only("pk", "username",)
+        choices = []
         for u in users_objects:
             try:
                 akhnowledge_text = u.status_of_messaged_users.get(message__pk=self.instance.pk).akhnowledge_date  #
@@ -122,8 +122,8 @@ class MessagesForm(forms.ModelForm):
         # logger.info(locals())
         # logger.info(self.__dict__)
         # logger.info("=================================")
-        # for u in 
-        # instance.status_of_user_messages = 
+        # for u in
+        # instance.status_of_user_messages =
         def save_m2m():
             # import pdb;
             # pdb.set_trace();
@@ -137,7 +137,7 @@ class MessagesForm(forms.ModelForm):
                 target_users = set(self.cleaned_data['users'])
             except (MultiValueDictKeyError, KeyError):
                 target_users = set([])
-            
+
             users_removed = initial_users - target_users
             users_added = target_users - initial_users
 
@@ -146,7 +146,7 @@ class MessagesForm(forms.ModelForm):
             # deleting removed users from M:M
             MessagesStatus.objects.filter(message=self.instance, user__in=users_removed).delete()
             MessagesStatus.objects.bulk_create(users_added_objects)
-        
+
         self.save_m2m = save_m2m
 
         # # Do we need to save all changes now?

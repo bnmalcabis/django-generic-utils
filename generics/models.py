@@ -3,8 +3,9 @@
 import types
 
 from django.db import models
+from django.conf import settings
 from django.utils import timezone
-from django.contrib.auth.models import User
+from django.contrib.auth import get_user_model
 from django.core.exceptions import ObjectDoesNotExist
 
 from generics.functions import datetime_difference
@@ -16,7 +17,7 @@ logger.setLevel(logging.INFO)
 
 
 class GenericManager(models.Manager):
-    
+
     def flat_field_list_filtered(self, fields=None, field=None, criteria={}, output="list"):
         """"
         Exports a list of a field's values as a list, dictionary or a comma seperated string
@@ -58,10 +59,10 @@ class GenericManager(models.Manager):
 
         # import pdb
         # pdb.set_trace()
-        
+
 
         # logger.info("flat_field_list_filtered result: %s" % result)
-        
+
         return result
 
 
@@ -98,7 +99,7 @@ class GenericManager(models.Manager):
 
 class MessagesStatus(models.Model):
     message = models.ForeignKey('Messages', related_name="status_of_user_messages")
-    user = models.ForeignKey(User, related_name="status_of_messaged_users")
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, related_name="status_of_messaged_users")
     akhnowledge_date = models.DateTimeField(editable=False, null=True, default=None)
 
     class Meta:
@@ -129,7 +130,7 @@ class MessagesManager(GenericManager):
             message_obj.save()
 
         try:
-            the_user = User.objects.get(username=username)
+            the_user = get_user_model().objects.get(username=username)
         except ObjectDoesNotExist:
             logger.error(
                 "There's no user with username {}".format(username)
@@ -166,13 +167,13 @@ class Messages(models.Model):
     msg_code = models.CharField("Message Unique Code", max_length=50, unique=True, db_index=True)
     button_txt = models.CharField("Button Text", max_length=50, default="Ok")
     button_link = models.URLField("Button Link", max_length=200, default="", blank=True)
-    users = models.ManyToManyField(User, through=MessagesStatus, related_name="messages_of_user",help_text="Users who need to akhnowledge this message")
+    users = models.ManyToManyField(settings.AUTH_USER_MODEL, through=MessagesStatus, related_name="messages_of_user",help_text="Users who need to akhnowledge this message")
 
 
     class Meta:
         verbose_name_plural = 'Messages'
         verbose_name = 'Message'
-    
+
     def __unicode__(self):
         return self.msg[:40]
 
@@ -190,7 +191,7 @@ class CeleryTasks(models.Model):
     creation_date = models.DateTimeField('Creation Date', auto_now_add=True)
     start_date = models.DateTimeField('Start Date', null=True)
     end_date = models.DateTimeField('End Date', default=None, null=True)
-    user = models.ForeignKey(User, related_name="tasks_of_user")
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, related_name="tasks_of_user")
     key = models.CharField("Task Blocking Key", max_length=50, db_index=True, default="", blank=True)
 
     @property
@@ -212,5 +213,3 @@ class CeleryTasks(models.Model):
 
     def __unicode__(self):
         return "%s: %s" % (self.task_id, self.status)
-
-

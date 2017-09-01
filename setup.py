@@ -12,7 +12,7 @@ except:
 os.chdir(os.path.normpath(os.path.join(os.path.abspath(__file__), os.pardir)))
 
 setup(name='django-generic-utils',
-      version='0.3.3',
+      version='0.3.4',
       description='Generic Useful Django Classes/Functions',
       url='https://github.com/erasmose/django-generic-utils',
       download_url='https://github.com/erasmose/django-generic-utils/tarball/master',
@@ -36,6 +36,6 @@ setup(name='django-generic-utils',
         "Topic :: Software Development",
         'Programming Language :: Python',
         'Topic :: Internet :: WWW/HTTP',
-        'Topic :: Internet :: WWW/HTTP :: Dynamic Content',        
+        'Topic :: Internet :: WWW/HTTP :: Dynamic Content',
         ],
       )
