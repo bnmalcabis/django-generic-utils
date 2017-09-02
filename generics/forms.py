@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from django import forms
 from django.contrib.admin.widgets import FilteredSelectMultiple
-from django.contrib.auth.models import get_user_model
+from django.contrib.auth import get_user_model
 
 from generics.models import Messages, MessagesStatus
 from django.utils.datastructures import MultiValueDictKeyError
